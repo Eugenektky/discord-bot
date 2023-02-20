@@ -15,10 +15,19 @@ client.on('ready', (bot) => {
   console.log(`${bot.user.tag} is online`)
 })
 
-client.on('messageCreate', (message) => {
-  if(message.content === '!hi'){
-    message.reply('Hello!')
+client.on('messageCreate', async (message) => {
+  try{
+    if(message.content.toLowerCase() === '!'){
+      await message.reply('How can I help you?')
+    } 
+      
+    if(message.content.toLowerCase() === '!hello'){
+      await message.reply('Hello!')
+    }
+  } catch (e) {
+    console.log('Error')
   }
+  
 })
 
 client.login(process.env.BOT_TOKEN);
