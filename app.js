@@ -1,27 +1,31 @@
-require('dotenv').config()
-const fs = require('fs')
-const path = require('path')
-const express = require('express')
-const { Client, Collection, Events, IntentsBitField } = require('discord.js');
+require('dotenv').config();
+const { Client, IntentsBitField } = require('discord.js');
 
 
-
-const client = new Client({ 
+const client = new Client({
   intents: [
-    IntentsBitField.Flags.Guilds, 
+    IntentsBitField.Flags.Guilds,
     IntentsBitField.Flags.GuildMembers,
     IntentsBitField.Flags.GuildMessages,
     IntentsBitField.Flags.MessageContent,
-  ], 
+  ],
 });
 
-client.commands = new Collection()
-const commandPaths = path.join(__dirname, 'commands')
-const commandFiles = fs.readdirSync(commandPaths).filter(file => file.endsWith('js'))
+client.on('ready', (c) => {
+  console.log(`✅ ${c.user.tag} is online.`);
+});
 
-client.on('ready', (bot) => {
-  console.log(`${bot.user.tag} is online`)
-})
+client.on('interactionCreate', (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+
+  if (interaction.commandName === 'hey') {
+    return interaction.reply('hey!');
+  }
+
+  if (interaction.commandName === 'spotify') {
+    return interaction.reply('Opening spotify!');
+  }
+});
 
 client.on('messageCreate', async (message) => {
   try{
@@ -36,33 +40,5 @@ client.on('messageCreate', async (message) => {
     console.log('Error')
   }
 })
-
-for(const file of commandFiles){
-  const filePath = path.join(commandPaths, file)
-  const command = require(filePath)
-  client.commands.set(command.data.name, command)
-}
-
-client.on('interactionCreate', async (interaction) => {
-	if (!interaction.isChatInputCommand()) {
-    console.log(interaction.commandName)
-    return;
-  }
-  
-	const command = client.commands.get(interaction.commandName);
-
-	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`);
-		return;
-	}
-
-	try {
-		await command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-	}
-});
-
 
 client.login(process.env.BOT_TOKEN);

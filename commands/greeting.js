@@ -6,5 +6,6 @@ module.exports = {
 		.setDescription('Replies with Hello!'),
 	async execute(interaction) {
 		await interaction.reply('Hello!');
+		console.log('slash hello is working')
 	},
 };
